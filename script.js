@@ -1,58 +1,93 @@
 "use strict";
 
 let shape ='    *\n   **\n  * *\n *  *\n*****';
+let shape2 ='    ** *  \n   *****  \n  ******  \n ******** \n**********\n *      * \n * ** * * \n * ** * * \n * **   * \n ******** ';
 
 class Shape {
-    constructor(shape) {
-        this.split = shape.split('\n');
+    constructor(item) {
+        this.split = item.split('\n');
         this.numbers = [];
         this.lineLength;
-        this.arrMap;
     }
     binary() {
-        let x = 1;
-        this.split.forEach(i => {
-            this.lineLength = this.split.length;
+        this.lineLength = this.split.length;
+        for(let x = 0; x < this.lineLength; x++){
+            this.numbers.push([]);
+        }
+        this.split.forEach((i,r) => {
             for(let j of i){
-                (j === '*')?this.numbers.push([x, 1]):this.numbers.push([x, 0]);
-                x++;
+                (j === '*')?this.numbers[r].push(1):this.numbers[r].push(0);
             }
         });
-        this.arrMap = new Map(this.numbers);
     }
 }
 
 class Rows extends Shape {
-    constructor() {
-        super(shape);
-        this.rows = '';
+    constructor(item) {
+        super(item);
+        this.rows = [];
+        this.leftSide = '';
     }
     counted() {
         super.binary();
-        this.arrMap.forEach((value, key) => {
-            if(key % 5 == 0){
-                this.arrMap.set(key, '\n');
-            }else if(value == 0){
-                value = '';
-            }else{
-                if(this.arrMap.get(key+1) > 0){
-                    this.arrMap.set(key+1, this.arrMap.get(key) + this.arrMap.get(key+1));
-                    value = '';
+        this.numbers.forEach((arr,row) => {
+            for(let x = 0; x < this.lineLength; x++){
+                if(this.numbers[row][x] === 0){
+                    this.numbers[row][x] = '';
+                }else{
+                    if(this.numbers[row][x] > 0 && this.numbers[row][x+1] == 1){
+                        this.numbers[row][x+1] = this.numbers[row][x+1] + this.numbers[row][x];
+                        this.numbers[row][x] = '';
+                    }
                 }
-            }
-            if(key % 5 == 0){
-                this.rows = this.rows + value + '\n';
-            }else{
-                this.rows = this.rows + value;
-            }
-            return this.rows;
+                this.rows[x] = this.numbers[x].join('');
+            };
+            this.leftSide = this.rows.join('' + '\n');
         });
     }
     log() {
         this.counted();
-        console.log(this.rows);
+        console.log(this.leftSide);
+    }
+}
+
+class Columns extends Shape {
+    constructor(item) {
+        super(item);
+        this.columns = [];
+        this.topSide = '';
+    }
+    counted() {
+        super.binary();
+        let x = 0;
+        while(x < this.lineLength) {
+            this.numbers.forEach((arr, column) => {
+                if(this.numbers[column][x] === 0){
+                    this.numbers[column][x] = ' ';
+                }else{
+                    if(this.numbers[column][x] > 0 && this.numbers[column+1] != undefined && this.numbers[column+1][x] == 1){
+                        this.numbers[column+1][x] = this.numbers[column+1][x] + this.numbers[column][x];
+                        this.numbers[column][x] = ' ';
+                    }
+                }
+                this.columns[column] = this.numbers[column].join('');
+            });
+            x++;
+            this.topSide = this.columns.join('\n');
+        }
+    }
+    log() {
+        this.counted();
+        console.log(this.topSide);
     }
 }
 
 let rowCalc = new Rows(shape);
 rowCalc.log();
+let columnCalc = new Columns(shape);
+columnCalc.log();
+
+let rowCalc2 = new Rows(shape2);
+rowCalc2.log();
+let columnCalc2 = new Columns(shape2);
+columnCalc2.log();
