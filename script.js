@@ -60,13 +60,15 @@ class Columns extends Shape {
     counted() {
         super.binary();
         let x = 0;
+        let next = '';
         while(x < this.lineLength) {
             this.numbers.forEach((arr, column) => {
+                next = this.numbers[column+1];
                 if(this.numbers[column][x] === 0){
                     this.numbers[column][x] = ' ';
                 }else{
-                    if(this.numbers[column][x] > 0 && this.numbers[column+1] != undefined && this.numbers[column+1][x] == 1){
-                        this.numbers[column+1][x] = this.numbers[column+1][x] + this.numbers[column][x];
+                    if(this.numbers[column][x] > 0 && next != undefined && next[x] == 1){
+                        next[x] = next[x] + this.numbers[column][x];
                         this.numbers[column][x] = ' ';
                     }
                 }
